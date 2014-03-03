@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-AppCraig::Application.config.secret_key_base = '5ba70607328e6c33d4319cbf11c33c6e43ca10ba9aaee50a14e17f46e182e1edcbaa75d71030cc2e33168550e53f382c892525c151f505adb8f8ea33b85dd51b'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+AppCraig::Application.config.secret_key_base = secure_token
